@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LayananController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-    // sementara, untuk menguji hak akses
-    Route::get('/petugas/cek', fn () => 'Ini area petugas')->middleware('role:petugas');
+    
+    Route::middleware('role:petugas')->prefix('petugas')->name('petugas.')->group(function () {
+    Route::resource('layanan', LayananController::class)
+        ->parameters(['layanan' => 'layanan'])
+        ->except('show');
+    });
 });
